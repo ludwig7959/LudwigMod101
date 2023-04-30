@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "xyz.ludwicz.ludwigmod.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinChatHud",
+    "MixinDownloadingTerrainScreen",
+    "MixinEntityRenderDispatcher",
+    "MixinInGameHud",
+    "MixinItemModelGenerator",
+    "MixinItemRenderer",
+    "MixinLivingEntityRenderer",
+    "MixinMinecraftClient"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "text.autoconfig.ludwigmod.title" : "Ludwig Mod",
+  "text.autoconfig.ludwigmod.category.visual" : "Visual",
+  "text.autoconfig.ludwigmod.category.performance" : "Performance",
+  "text.autoconfig.ludwigmod.category.scoreboard" : "Scoreboard",
+  "text.autoconfig.ludwigmod.category.nametag" : "Nametag",
+  "text.autoconfig.ludwigmod.option.clearHitboxes" : "Clear Hitboxes",
+  "text.autoconfig.ludwigmod.option.enchantmentGlint" : "Enchantment Glint",
+  "text.autoconfig.ludwigmod.option.itemModelFix" : "Item Model Fix",
+  "text.autoconfig.ludwigmod.option.instantlyCloseLoadingScreen" : "Close loading screen instantly",
+  "text.autoconfig.ludwigmod.option.hideScoreboard" : "Hide Scoreboard",
+  "text.autoconfig.ludwigmod.option.hideScoreboardScores" : "Hide Scores",
+  "text.autoconfig.ludwigmod.option.thirdPersonNametag" : "Third Person Nametag"
+}
