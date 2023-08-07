@@ -4,14 +4,29 @@
   "package": "xyz.ludwicz.ludwigmod.mixin",
   "compatibilityLevel": "JAVA_17",
   "client": [
+    "MixinCamera",
     "MixinChatHud",
     "MixinDownloadingTerrainScreen",
+    "MixinEntity",
     "MixinEntityRenderDispatcher",
     "MixinInGameHud",
     "MixinItemModelGenerator",
     "MixinItemRenderer",
+    "MixinItemStack",
+    "MixinLightmapTextureManager",
     "MixinLivingEntityRenderer",
-    "MixinMinecraftClient"
+    "MixinMinecraftClient",
+    "MixinNotifyTask",
+    "MixinOptionImpl",
+    "MixinOptionsScreen",
+    "MixinPlayerManager",
+    "MixinResourcePackManager",
+    "MixinScreen",
+    "MixinServerPlayerEntity",
+    "MixinSimpleOption",
+    "MixinSliderControl",
+    "MixinTntEntityRenderer",
+    "MixinTooltipComponent"
   ],
   "injectors": {
     "defaultRequire": 1

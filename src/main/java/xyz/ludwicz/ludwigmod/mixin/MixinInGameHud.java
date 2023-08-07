@@ -4,6 +4,7 @@ import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -13,7 +14,13 @@ import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.LocalCapture;
 import xyz.ludwicz.ludwigmod.LudwigConfig;
+import xyz.ludwicz.ludwigmod.potionhud.PotionHUDMod;
+import xyz.ludwicz.ludwigmod.potionhud.PotionHudType;
+import xyz.ludwicz.ludwigmod.saturation.SaturationMod;
+
+import java.util.Collection;
 
 @Mixin(InGameHud.class)
 public class MixinInGameHud {
@@ -24,7 +31,7 @@ public class MixinInGameHud {
     @Inject(method = "renderScoreboardSidebar", at = @At("HEAD"), cancellable = true)
     private void hide(MatrixStack matrices, ScoreboardObjective objective, CallbackInfo ci) {
         LudwigConfig config = AutoConfig.getConfigHolder(LudwigConfig.class).getConfig();
-        if(config != null && config.hideScoreboard)
+        if (config != null && config.hideScoreboard)
             ci.cancel();
     }
 
@@ -35,11 +42,11 @@ public class MixinInGameHud {
         return config != null && config.hideScoreboardScores ? "" : score;
     }
 
-     @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 2)
+    @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 2)
     private int modifySeperatorWidth(int seperatorWidth, MatrixStack matrices, ScoreboardObjective objective) {
-         LudwigConfig config = AutoConfig.getConfigHolder(LudwigConfig.class).getConfig();
+        LudwigConfig config = AutoConfig.getConfigHolder(LudwigConfig.class).getConfig();
 
-         return config != null && config.hideScoreboardScores ? 0 : seperatorWidth;
+        return config != null && config.hideScoreboardScores ? 0 : seperatorWidth;
     }
 
     @Redirect(method = "renderScoreboardSidebar", slice = @Slice(from = @At(value = "INVOKE", target = "Ljava/util/Iterator;hasNext()Z")), at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;getWidth(Ljava/lang/String;)I", ordinal = 0))
@@ -49,45 +56,31 @@ public class MixinInGameHud {
         return config != null && config.hideScoreboardScores ? 0 : textRenderer.getWidth(score);
     }
 
-    /* @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 5)
-    private int modifyX1(int x1) {
-        if (Settings.Sidebar.getPosition() == SidebarPosition.LEFT) {
-            xShift = x1 - 1;
-            return 1;
-        }
-        return x1;
+    @Inject(
+            method = "renderStatusEffectOverlay",
+            slice = @Slice(from = @At(value = "INVOKE", target = "Ljava/util/List;forEach(Ljava/util/function/Consumer;)V")),
+            at = @At(
+                    value = "INVOKE",
+                    target = "Lcom/mojang/blaze3d/systems/RenderSystem;setShaderColor(FFFF)V",
+                    shift = At.Shift.AFTER
+            ),
+            locals = LocalCapture.CAPTURE_FAILHARD
+    )
+    private void renderCompactStatusEffect(MatrixStack matrices, CallbackInfo ci, Collection<StatusEffectInstance> collection) {
+        LudwigConfig config = AutoConfig.getConfigHolder(LudwigConfig.class).getConfig();
+        if (config == null || !config.potionHudEnabled || config.potionHudType != PotionHudType.COMPACT)
+            return;
+
+        PotionHUDMod.renderCompactStatusEffects(collection);
     }
 
-    @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 11)
-    private int modifyX2(int x2) {
-        if (Settings.Sidebar.getPosition() == SidebarPosition.LEFT) {
-            return x2 - xShift;
-        }
-        return x2;
+    @Inject(at = @At(value = "CONSTANT", args = "stringValue=food", shift = At.Shift.BY, by = 2), method = "renderStatusBars(Lnet/minecraft/client/util/math/MatrixStack;)V")
+    private void renderFoodPre(MatrixStack stack, CallbackInfo info) {
+        SaturationMod.preRenderHUD(stack);
     }
 
-    @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 8)
-    private int modifyHeadingBackgroundColor(int color) {
-        return Settings.Sidebar.Background.getHeadingColor();
+    @Inject(slice = @Slice(from = @At(value = "CONSTANT", args = "stringValue=food")), at = @At(value = "squeek.appleskin.mixin.util.BeforeInc", args = "intValue=-10", ordinal = 0), method = "renderStatusBars(Lnet/minecraft/client/util/math/MatrixStack;)V")
+    private void renderFoodPost(MatrixStack stack, CallbackInfo info) {
+        SaturationMod.renderHUD(stack);
     }
-
-    @ModifyVariable(method = "renderScoreboardSidebar", at = @At(value = "STORE", ordinal = 0), ordinal = 7)
-    private int modifyBackgroundColor(int color) {
-        return Settings.Sidebar.Background.getColor();
-    }
-
-    @ModifyArg(method = "renderScoreboardSidebar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I", ordinal = 1), index = 4)
-    private int modifyHeadingColor(int color) {
-        return Settings.Sidebar.Text.getHeadingColor().getRgb();
-    }
-
-    @ModifyArg(method = "renderScoreboardSidebar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Lnet/minecraft/text/Text;FFI)I", ordinal = 0), index = 4)
-    private int modifyTextColor(int color) {
-        return Settings.Sidebar.Text.getColor().getRgb();
-    }
-
-    @Redirect(method = "renderScoreboardSidebar", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/font/TextRenderer;draw(Lnet/minecraft/client/util/math/MatrixStack;Ljava/lang/String;FFI)I", ordinal = 0))
-    private int modifyScoreColor(TextRenderer textRenderer, MatrixStack matrices, String text, float x, float y, int color) {
-        return textRenderer.draw(matrices, Formatting.strip(text), x, y, Settings.Sidebar.Text.getScoreColor().getRgb());
-    } */
 }

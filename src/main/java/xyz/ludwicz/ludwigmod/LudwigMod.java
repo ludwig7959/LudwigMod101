@@ -6,6 +6,9 @@ import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 import net.fabricmc.api.ClientModInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import xyz.ludwicz.ludwigmod.freelook.FreelookMod;
+import xyz.ludwicz.ludwigmod.menublur.MenuBlurMod;
+import xyz.ludwicz.ludwigmod.zoom.ZoomMod;
 
 public class LudwigMod implements ClientModInitializer {
 
@@ -19,5 +22,9 @@ public class LudwigMod implements ClientModInitializer {
         instance = this;
 
         AutoConfig.register(LudwigConfig.class, Toml4jConfigSerializer::new);
+
+        ZoomMod.init();
+        FreelookMod.init();
+        MenuBlurMod.init();
     }
 }

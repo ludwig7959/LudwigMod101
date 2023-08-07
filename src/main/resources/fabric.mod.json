@@ -29,6 +29,8 @@
     "ludwigmod.mixins.json"
   ],
 
+  "accessWidener" : "ludwigmod.accesswidener",
+
   "depends": {
     "fabricloader": ">=0.14.19",
     "fabric-api": "*",

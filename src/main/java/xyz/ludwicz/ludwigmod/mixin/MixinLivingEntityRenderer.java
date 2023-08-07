@@ -20,7 +20,7 @@ public class MixinLivingEntityRenderer {
             return;
 
         if (ent == MinecraftClient.getInstance().cameraEntity) {
-            ci.setReturnValue(Boolean.valueOf(MinecraftClient.isHudEnabled()));
+            ci.setReturnValue(config.showNameTagWhenHudIsDisabled ? true : Boolean.valueOf(MinecraftClient.isHudEnabled()));
         }
     }
 }

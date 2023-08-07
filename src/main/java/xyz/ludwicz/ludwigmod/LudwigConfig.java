@@ -2,7 +2,11 @@ package xyz.ludwicz.ludwigmod;
 
 import me.shedaniel.autoconfig.ConfigData;
 import me.shedaniel.autoconfig.annotation.Config;
+import me.shedaniel.autoconfig.annotation.ConfigEntry;
 import me.shedaniel.autoconfig.annotation.ConfigEntry.Category;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.EnumHandler;
+import me.shedaniel.autoconfig.annotation.ConfigEntry.Gui.EnumHandler.EnumDisplayOption;
+import xyz.ludwicz.ludwigmod.potionhud.PotionHudType;
 
 @Config(name = "ludwigmod")
 public class LudwigConfig implements ConfigData {
@@ -23,6 +27,23 @@ public class LudwigConfig implements ConfigData {
     @Category("performance")
     public boolean instantlyCloseLoadingScreen = true;
 
+    // Potion HUD
+
+    @Category("potionHud")
+    public boolean potionHudEnabled = true;
+
+    @Category("potionHud")
+    @EnumHandler(option = EnumDisplayOption.BUTTON)
+    public PotionHudType potionHudType = PotionHudType.COMPACT;
+
+    @Category("potionHud")
+    @ConfigEntry.ColorPicker
+    public int potionHudTimerColor = 0xFFFFFF;
+
+    @Category("potionHud")
+    @ConfigEntry.ColorPicker
+    public int potionHudTimerRunningOutColor = 0xFF0000;
+
     // Scoreboard
 
     @Category("scoreboard")
@@ -31,8 +52,42 @@ public class LudwigConfig implements ConfigData {
     @Category("scoreboard")
     public boolean hideScoreboardScores = true;
 
-    // NameTag
+    // Nametag
 
     @Category("nametag")
     public boolean thirdPersonNametag = true;
+    @Category("nametag")
+    public boolean showNameTagWhenHudIsDisabled = true;
+
+    // Saturation
+
+    @Category("saturation")
+    public boolean showSaturationOverlay = true;
+    @Category("saturation")
+    public boolean showExhaustionOverlay = true;
+    @Category("saturation")
+    public boolean showHungerRestoredByFood = true;
+    @Category("saturation")
+    public boolean showEstimatedHealth = false;
+
+    // Tooltip
+
+    @Category("tooltip")
+    public boolean showFoodValuesInTooltip = true;
+    @Category("tooltip")
+    public boolean showRepairCostInTooltip = true;
+
+    // Menu Blur
+
+    @Category("menuBlur")
+    @ConfigEntry.BoundedDiscrete(min = 0, max = 10)
+    public int menuBlurStrength = 4;
+    @Category("menuBlur")
+    @ConfigEntry.ColorPicker(allowAlpha = true)
+    public int menuBlurColor = 0x6F000000;
+
+    // TNT Countdown
+
+    @Category("tntCountdown")
+    public boolean tntCountdownEnabled = true;
 }

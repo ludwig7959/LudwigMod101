@@ -1,0 +1,29 @@
+accessWidener v1 named
+accessible class net/minecraft/client/option/SimpleOption$Callbacks
+extendable class net/minecraft/client/option/SimpleOption$SliderCallbacks
+
+# Required for the fancy screen
+accessible  field    net/minecraft/client/gui/screen/pack/PackScreen    availablePackList    Lnet/minecraft/client/gui/screen/pack/PackListWidget;
+mutable     field    net/minecraft/client/gui/screen/pack/PackScreen    availablePackList    Lnet/minecraft/client/gui/screen/pack/PackListWidget;
+
+accessible  field    net/minecraft/client/gui/screen/pack/PackScreen    selectedPackList    Lnet/minecraft/client/gui/screen/pack/PackListWidget;
+
+accessible  field    net/minecraft/client/gui/screen/Screen    children    Ljava/util/List;
+
+accessible  method   net/minecraft/client/gui/screen/pack/PackScreen    updatePackLists    ()V
+extendable  method   net/minecraft/client/gui/screen/pack/PackScreen    updatePackLists    ()V
+
+accessible  method   net/minecraft/client/gui/screen/pack/PackScreen    refresh    ()V
+
+accessible  field    net/minecraft/client/gui/screen/pack/PackListWidget    title    Lnet/minecraft/text/Text;
+
+# Required for getting the path of a resource pack entry
+accessible  field    net/minecraft/client/gui/screen/pack/PackListWidget$ResourcePackEntry    pack    Lnet/minecraft/client/gui/screen/pack/ResourcePackOrganizer$Pack;
+
+accessible  field    net/minecraft/client/gui/screen/pack/PackListWidget$ResourcePackEntry    widget    Lnet/minecraft/client/gui/screen/pack/PackListWidget;
+
+accessible  field    net/minecraft/client/gui/screen/pack/ResourcePackOrganizer$AbstractPack    profile    Lnet/minecraft/resource/ResourcePackProfile;
+
+accessible  field    net/minecraft/client/resource/Format4ResourcePack    parent    Lnet/minecraft/resource/ResourcePack;
+accessible  field    net/minecraft/client/resource/Format3ResourcePack    parent    Lnet/minecraft/resource/ResourcePack;
+accessible  field    net/minecraft/resource/AbstractFileResourcePack    base    Ljava/io/File;
