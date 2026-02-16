@@ -2,6 +2,7 @@ package xyz.ludwicz.ludwigmod.gui;
 
 import lombok.Setter;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import xyz.ludwicz.ludwigmod.util.Rectangle;
 
 import java.util.HashSet;
@@ -91,5 +92,8 @@ public class SnapManager {
             return ySnap;
         }
         return null;
+    }
+
+    public void renderSnaps(DrawContext context) {
     }
 }

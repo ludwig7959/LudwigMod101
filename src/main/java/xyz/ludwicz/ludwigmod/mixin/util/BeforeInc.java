@@ -22,7 +22,7 @@ public class BeforeInc extends InjectionPoint
 
 	public BeforeInc(IMixinContext context, AnnotationNode node, String returnType)
 	{
-		super(Annotations.<String>getValue(node, "slice", ""), Selector.DEFAULT, null);
+		super();
 
 		this.ordinal = Annotations.<Integer>getValue(node, "ordinal", -1);
 		this.intValue = Annotations.<Integer>getValue(node, "intValue", (Integer) null);
@@ -69,7 +69,7 @@ public class BeforeInc extends InjectionPoint
 		}
 
 		int incr = ((IincInsnNode) insn).incr;
-		return this.intValue.equals(incr);
+		return this.intValue == null || this.intValue.equals(incr);
 	}
 
 }

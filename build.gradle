@@ -1,12 +1,66 @@
 plugins {
-    id 'fabric-loom' version '1.2-SNAPSHOT'
+    id 'fabric-loom' version '1.13-SNAPSHOT'
     id 'maven-publish'
 }
 
 version = project.mod_version
 group = project.maven_group
+def javaVersion = project.java_version.toInteger()
+
+if (stonecutter.current.version == '1.21.11') {
+    sourceSets.main.java {
+        exclude(
+            'xyz/ludwicz/ludwigmod/hitbox/**',
+            'xyz/ludwicz/ludwigmod/itemmodelfix/**',
+            'xyz/ludwicz/ludwigmod/potionhud/PotionHUDMod.java',
+            'xyz/ludwicz/ludwigmod/resourcepack/**',
+            'xyz/ludwicz/ludwigmod/saturation/**',
+            'xyz/ludwicz/ludwigmod/scoreboard/**',
+            'xyz/ludwicz/ludwigmod/tooltip/**',
+            'xyz/ludwicz/ludwigmod/borderless/**',
+            'xyz/ludwicz/ludwigmod/freelook/**',
+            'xyz/ludwicz/ludwigmod/gui/**',
+            'xyz/ludwicz/ludwigmod/hud/**',
+            'xyz/ludwicz/ludwigmod/menublur/**',
+            'xyz/ludwicz/ludwigmod/zoom/**',
+            'xyz/ludwicz/ludwigmod/util/ResourcePackListProcessor.java',
+            'xyz/ludwicz/ludwigmod/util/ResourcePackUtil.java',
+            'xyz/ludwicz/ludwigmod/util/DimensionsResolver.java',
+            'xyz/ludwicz/ludwigmod/lighting/BoostedSliderCallbacks.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinCamera.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinDownloadingTerrainScreen.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinEntity.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinEntityRenderDispatcher.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinEntryListWidget.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinFileResourcePackProvider.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinChatHud.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinInGameHud.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinItemModelGenerator.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinItemStack.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinLightmapTextureManager.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinMinecraftClient.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinOptionImpl.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinOptionsScreen.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinPackListWidget.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinPlayerManager.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinResourcePackManager.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinScreen.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinServerPlayerEntity.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinSimpleOption.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinSliderControl.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinSprite.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinTntEntityRenderer.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinTooltipComponent.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinLivingEntityRenderer.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinVideoOptionsScreen.java',
+            'xyz/ludwicz/ludwigmod/mixin/MixinWindow.java',
+            'xyz/ludwicz/ludwigmod/mixin/util/BeforeInc.java'
+        )
+    }
+}
 
 repositories {
+    mavenCentral()
     maven { url "https://maven.shedaniel.me/" }
     maven {
         name = 'Ladysnake Mods'
@@ -39,60 +93,84 @@ repositories {
 }
 
 dependencies {
-    compileOnly('org.projectlombok:lombok:1.18.22')
-    annotationProcessor('org.projectlombok:lombok:1.18.22')
+    compileOnly("org.projectlombok:lombok:${project.lombok_version}")
+    annotationProcessor("org.projectlombok:lombok:${project.lombok_version}")
 
-    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    minecraft "com.mojang:minecraft:${stonecutter.current.version}"
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+    if (project.hasProperty('sodium_version') && project.sodium_version?.trim()) {
+        modImplementation "maven.modrinth:sodium:${project.sodium_version}"
+    }
 
-    modApi "me.shedaniel.cloth:cloth-config-fabric:${project.cloth_config_version}"
+    modApi "${project.cloth_config_dependency}"
     modApi "com.terraformersmc:modmenu:${project.mod_menu_version}"
-    modImplementation "io.github.ladysnake:satin:${project.satin_version}"
-    include "io.github.ladysnake:satin:${project.satin_version}"
+    if (project.hasProperty('satin_dependency') && project.satin_dependency?.trim()) {
+        modImplementation "${project.satin_dependency}"
+        include "${project.satin_dependency}"
+    }
 
     modImplementation include("nl.enjarai:shared-resources-api:${project.shared_resources_version}")
-    include api(annotationProcessor("com.github.llamalad7.mixinextras:mixinextras-fabric:${project.mixin_extras_version}"))
-    annotationProcessor("com.github.LlamaLad7.mixinextras:mixinextras-fabric:${project.mixin_extras_version}")
+    def mixinExtras = "io.github.llamalad7:mixinextras-fabric:${project.mixin_extras_version}"
+    include api(annotationProcessor(mixinExtras))
+    annotationProcessor(mixinExtras)
 }
 
 base {
-    archivesName = project.archives_base_name
+    archivesName = "${project.archives_base_name}-${stonecutter.current.version}"
 }
 
 processResources {
     inputs.property "version", project.version
+    inputs.property "minecraft", stonecutter.current.version
+    inputs.property "loader_version", project.loader_version
+    inputs.property "java_version", project.java_version
+    inputs.property "aw_file", project.access_widener_file
+    inputs.property "mixin_config", project.mixin_config
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand(
+            "version": project.version,
+            "minecraft": stonecutter.current.version,
+            "loader_version": project.loader_version,
+            "java_version": project.java_version,
+            "aw_file": project.access_widener_file,
+            "mixin_config": project.mixin_config
+        )
     }
 }
 
 loom {
-    accessWidenerPath = file("src/main/resources/ludwigmod.accesswidener")
+    if (stonecutter.current.version == '1.20.1') {
+        accessWidenerPath = rootProject.file("src/main/resources/${project.access_widener_file}")
+    }
+
+    runConfigs.all {
+        ideConfigGenerated true
+        runDir "../../run"
+    }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.18 (1.18-pre2) upwards uses Java 17.
-    it.options.release = 17
+    it.options.release = javaVersion
 }
 
 java {
-    // Loom will automatically attach sourcesJar to a RemapSourcesJar task and to the "build" task
-    // if it is present.
-    // If you remove this line, sources will not be generated.
     withSourcesJar()
 
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.toVersion(javaVersion)
+    targetCompatibility = JavaVersion.toVersion(javaVersion)
+
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(javaVersion)
+    }
 }
 
 jar {
-    from("LICENSE") {
+    from(rootProject.file("LICENSE")) {
         rename { "${it}_${base.archivesName.get()}" }
     }
 }

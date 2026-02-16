@@ -1,16 +1,21 @@
 package xyz.ludwicz.ludwigmod.util;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.experimental.Accessors;
-
-@Data
-@AllArgsConstructor
-@Accessors(fluent = true)
 public class Position {
+    private final int x;
+    private final int y;
 
-    int x;
-    int y;
+    public Position(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public int x() {
+        return x;
+    }
+
+    public int y() {
+        return y;
+    }
 
     public Position subtract(int x, int y) {
         return new Position(this.x - x, this.y - y);
@@ -23,5 +28,4 @@ public class Position {
     public Position divide(float scale) {
         return new Position((int) (x / scale), (int) (y / scale));
     }
-
 }

@@ -13,6 +13,10 @@ public abstract class HudElement {
     private boolean enabled;
 
     @Getter
+    @Setter
+    private boolean hovered;
+
+    @Getter
     private HudAnchor anchor;
 
     @Getter

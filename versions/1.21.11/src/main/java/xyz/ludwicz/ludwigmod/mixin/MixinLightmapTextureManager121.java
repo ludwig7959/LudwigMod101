@@ -6,14 +6,13 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 @Mixin(LightmapTextureManager.class)
-public class MixinLightmapTextureManager {
+public class MixinLightmapTextureManager121 {
 
     @Redirect(
         method = "update",
         at = @At(
             value = "INVOKE",
-            target = "Ljava/lang/Math;max(FF)F",
-            ordinal = 2
+            target = "Ljava/lang/Math;max(FF)F"
         )
     )
     private float max(float arg0, float arg1) {

@@ -8,6 +8,13 @@ public class ModMenuIntegration implements ModMenuApi {
 
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return parent -> AutoConfig.getConfigScreen(LudwigConfig.class, parent).get();
+        return parent -> {
+            try {
+                return AutoConfig.getConfigScreen(LudwigConfig.class, parent).get();
+            } catch (Throwable t) {
+                LudwigMod.LOGGER.warn("Failed to build config screen, returning parent screen", t);
+                return parent;
+            }
+        };
     }
 }

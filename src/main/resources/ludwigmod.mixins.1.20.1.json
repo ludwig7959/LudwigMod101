@@ -1,0 +1,40 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "xyz.ludwicz.ludwigmod.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "client": [
+    "MixinCamera",
+    "MixinChatHud",
+    "MixinDownloadingTerrainScreen",
+    "MixinEntity",
+    "MixinEntityRenderDispatcher",
+    "MixinEntryListWidget",
+    "MixinFileResourcePackProvider",
+    "MixinGameRenderer",
+    "MixinInGameHud",
+    "MixinItemModelGenerator",
+    "MixinItemStack",
+    "MixinLightmapTextureManager",
+    "MixinLivingEntityRenderer",
+    "MixinMinecraftClient",
+    "MixinNotifyTask",
+    "MixinOptionImpl",
+    "MixinOptionsScreen",
+    "MixinPackListWidget",
+    "MixinPlayerManager",
+    "MixinResourcePackManager",
+    "MixinScreen",
+    "MixinServerPlayerEntity",
+    "MixinSimpleOption",
+    "MixinSliderControl",
+    "MixinSprite",
+    "MixinTntEntityRenderer",
+    "MixinTooltipComponent",
+    "MixinVideoOptionsScreen",
+    "MixinWindow"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

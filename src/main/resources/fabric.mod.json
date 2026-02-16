@@ -26,16 +26,16 @@
     ]
   },
   "mixins": [
-    "ludwigmod.mixins.json"
+    "${mixin_config}"
   ],
 
-  "accessWidener" : "ludwigmod.accesswidener",
+  "accessWidener" : "${aw_file}",
 
   "depends": {
-    "fabricloader": ">=0.14.19",
+    "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": "~1.20.1",
-    "java": ">=17"
+    "minecraft": "~${minecraft}",
+    "java": ">=${java_version}"
   },
   "suggests": {
     "another-mod": "*"

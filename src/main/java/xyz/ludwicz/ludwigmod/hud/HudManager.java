@@ -37,6 +37,14 @@ public class HudManager {
         }
     }
 
+    public void renderPlaceholder(DrawContext context, float delta) {
+        if (client.currentScreen instanceof HUDEditScreen) {
+            for (HudElement hud : getMovableElements()) {
+                hud.renderPlaceholder(context, delta);
+            }
+        }
+    }
+
     public List<HudElement> getElements() {
         if (elements.size() > 0) {
             return new ArrayList<>(elements);
