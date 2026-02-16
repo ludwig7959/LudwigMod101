@@ -1,0 +1,12 @@
+# Normalize text files by default
+* text=auto
+
+# Gradle wrapper scripts must keep platform-specific EOLs
+gradlew text eol=lf
+gradlew.bat text eol=crlf
+
+# Common script defaults
+*.sh text eol=lf
+*.bash text eol=lf
+*.cmd text eol=crlf
+*.bat text eol=crlf
