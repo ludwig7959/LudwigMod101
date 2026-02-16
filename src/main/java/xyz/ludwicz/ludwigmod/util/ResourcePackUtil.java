@@ -1,9 +1,6 @@
 package xyz.ludwicz.ludwigmod.util;
 
 import net.fabricmc.fabric.impl.resource.loader.ModNioResourcePack;
-import net.minecraft.client.resource.Format3ResourcePack;
-import net.minecraft.client.resource.Format4ResourcePack;
-import net.minecraft.resource.AbstractFileResourcePack;
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.ResourcePack;
 import net.minecraft.resource.ZipResourcePack;
@@ -42,16 +39,13 @@ public class ResourcePackUtil {
         return Files.isDirectory(fileOrFolder) ? isFolderBasedPack(fileOrFolder) : fileOrFolder.toString().endsWith(".zip");
     }
 
+    @SuppressWarnings("UnstableApiUsage")
     public static Path determinePackFolder(ResourcePack pack) {
         try {
-            Class<? extends ResourcePack> cls = pack.getClass();
-
-            if (cls == ZipResourcePack.class || cls == DirectoryResourcePack.class) {
-                return ((AbstractFileResourcePack) pack).base.toPath();
-            } else if (pack instanceof Format3ResourcePack compatPack) {
-                return determinePackFolder(compatPack.parent);
-            } else if (pack instanceof Format4ResourcePack compatPack) {
-                return determinePackFolder(compatPack.parent);
+            if (pack instanceof DirectoryResourcePack directoryResourcePack) {
+                return directoryResourcePack.root;
+            } else if (pack instanceof ZipResourcePack zipResourcePack) {
+                return zipResourcePack.backingZipFile.toPath();
             } else if (pack instanceof ModNioResourcePack modResourcePack) {
                 return Path.of(modResourcePack.getName().replaceAll(UNSAFE_PATH_REGEX, "_"));
             } else {

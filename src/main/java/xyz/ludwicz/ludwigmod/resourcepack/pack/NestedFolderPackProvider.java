@@ -2,10 +2,11 @@ package xyz.ludwicz.ludwigmod.resourcepack.pack;
 
 import net.minecraft.resource.DirectoryResourcePack;
 import net.minecraft.resource.ResourcePackProfile;
-import net.minecraft.resource.ResourcePackProfile.Factory;
 import net.minecraft.resource.ResourcePackProfile.InsertionPosition;
 import net.minecraft.resource.ResourcePackProvider;
+import net.minecraft.resource.ResourceType;
 import net.minecraft.resource.ZipResourcePack;
+import net.minecraft.text.Text;
 import org.apache.commons.lang3.StringUtils;
 import xyz.ludwicz.ludwigmod.util.ResourcePackUtil;
 
@@ -23,34 +24,34 @@ public class NestedFolderPackProvider implements ResourcePackProvider {
     }
 
     @Override
-    public void register(Consumer<ResourcePackProfile> profileAdder, Factory factory) {
+    public void register(Consumer<ResourcePackProfile> profileAdder) {
         File[] folders = root.listFiles(ResourcePackUtil::isFolderButNotFolderBasedPack);
 
         for (File folder : ResourcePackUtil.wrap(folders)) {
-            processFolder(folder, profileAdder, factory);
+            processFolder(folder, profileAdder);
         }
     }
 
-    public void processFolder(File folder, Consumer<ResourcePackProfile> profileAdder, Factory factory) {
+    public void processFolder(File folder, Consumer<ResourcePackProfile> profileAdder) {
         if (ResourcePackUtil.isFolderBasedPack(folder)) {
-            addPack(folder, profileAdder, factory);
+            addPack(folder, profileAdder);
             return;
         }
 
         File[] zipFiles = folder.listFiles(file -> file.isFile() && file.getName().endsWith(".zip"));
 
         for (File zipFile : ResourcePackUtil.wrap(zipFiles)) {
-            addPack(zipFile, profileAdder, factory);
+            addPack(zipFile, profileAdder);
         }
 
         File[] nestedFolders = folder.listFiles(File::isDirectory);
 
         for (File nestedFolder : ResourcePackUtil.wrap(nestedFolders)) {
-            processFolder(nestedFolder, profileAdder, factory);
+            processFolder(nestedFolder, profileAdder);
         }
     }
 
-    public void addPack(File fileOrFolder, Consumer<ResourcePackProfile> profileAdder, Factory factory) {
+    public void addPack(File fileOrFolder, Consumer<ResourcePackProfile> profileAdder) {
         String displayName = fileOrFolder.getName();
         String name = "file/" + StringUtils.removeStart(
                 fileOrFolder.getAbsolutePath().substring(rootLength).replace('\\', '/'), "/");
@@ -60,14 +61,16 @@ public class NestedFolderPackProvider implements ResourcePackProvider {
         FolderedPackSource packSource = new FolderedPackSource(rootPath, filePath);
 
         if (fileOrFolder.isDirectory()) {
-            info = ResourcePackProfile.of(
-                    name, false, () -> new DirectoryResourcePack(fileOrFolder),
-                    factory, InsertionPosition.TOP, packSource
+            info = ResourcePackProfile.create(
+                    name, Text.literal(displayName), false,
+                    (packName) -> new DirectoryResourcePack(packName, fileOrFolder.toPath(), true),
+                    ResourceType.CLIENT_RESOURCES, InsertionPosition.TOP, packSource
             );
         } else {
-            info = ResourcePackProfile.of(
-                    name, false, () -> new ZipResourcePack(fileOrFolder),
-                    factory, InsertionPosition.TOP, packSource
+            info = ResourcePackProfile.create(
+                    name, Text.literal(displayName), false,
+                    (packName) -> new ZipResourcePack(packName, fileOrFolder, true),
+                    ResourceType.CLIENT_RESOURCES, InsertionPosition.TOP, packSource
             );
         }
 

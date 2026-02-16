@@ -9,8 +9,8 @@ import net.minecraft.client.render.VertexFormats;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.Entity;
 import net.minecraft.util.math.Box;
-import net.minecraft.util.math.Matrix3f;
-import net.minecraft.util.math.Matrix4f;
+import org.joml.Matrix3f;
+import org.joml.Matrix4f;
 
 public class HitboxMod {
 
@@ -26,12 +26,12 @@ public class HitboxMod {
         float k = (float) box.minZ;
         Tessellator tessellator = Tessellator.getInstance();
         BufferBuilder buffer = tessellator.getBuffer();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(GameRenderer::getPositionColorProgram);
         RenderSystem.enableCull();
         RenderSystem.depthMask(false);
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
-        RenderSystem.disableTexture();
+        // RenderSystem.disableTexture();
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();
         RenderSystem.depthMask(true);

@@ -7,7 +7,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import xyz.ludwicz.ludwigmod.saturation.SaturationMod;
+import xyz.ludwicz.ludwigmod.tooltip.TooltipMod.FoodOverlay;
+import xyz.ludwicz.ludwigmod.tooltip.TooltipMod.FoodOverlayTextComponent;
 
 @Mixin(TooltipComponent.class)
 public interface MixinTooltipComponent extends TooltipComponent {
@@ -19,8 +20,8 @@ public interface MixinTooltipComponent extends TooltipComponent {
             cancellable = true
     )
     private static void AppleSkin_of(OrderedText text, CallbackInfoReturnable<TooltipComponent> info) {
-        if (text instanceof SaturationMod.FoodOverlayTextComponent) {
-            info.setReturnValue(((SaturationMod.FoodOverlayTextComponent) text).foodOverlay);
+        if (text instanceof FoodOverlayTextComponent) {
+            info.setReturnValue(((FoodOverlayTextComponent) text).foodOverlay);
         }
     }
 
@@ -32,8 +33,8 @@ public interface MixinTooltipComponent extends TooltipComponent {
             cancellable = true
     )
     private static void AppleSkin_ofData(TooltipData data, CallbackInfoReturnable<TooltipComponent> info) {
-        if (data instanceof SaturationMod.FoodOverlay) {
-            info.setReturnValue((SaturationMod.FoodOverlay) data);
+        if (data instanceof FoodOverlay) {
+            info.setReturnValue((FoodOverlay) data);
         }
     }
 }

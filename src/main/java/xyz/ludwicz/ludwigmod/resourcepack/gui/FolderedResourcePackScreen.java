@@ -36,14 +36,17 @@ public class FolderedResourcePackScreen extends PackScreen {
     private static final Text SORT_ZA = Text.translatable("gui.resourcepack.sort.z-a");
     private static final Text VIEW_FOLDER = Text.translatable("gui.resourcepack.view.folder");
     private static final Text VIEW_FLAT = Text.translatable("gui.resourcepack.view.flat");
+    private static final Text AVAILABLE_PACKS_TITLE_HOVER = Text.translatable("recursiveresources.availablepacks.title.hover");
+    private static final Text SELECTED_PACKS_TITLE_HOVER = Text.translatable("recursiveresources.selectedpacks.title.hover");
 
-    private final MinecraftClient client = MinecraftClient.getInstance();
+    protected final MinecraftClient client = MinecraftClient.getInstance();
+    protected final Screen parent;
 
     private final ResourcePackListProcessor listProcessor = new ResourcePackListProcessor(this::refresh);
     private Comparator<ResourcePackEntry> currentSorter;
 
     private PackListWidget originalAvailablePacks;
-    private FolderedPackListWidget customAvailablePacks;
+    private PackListWidget customAvailablePacks;
     private TextFieldWidget searchField;
 
     private Path currentFolder = ROOT_FOLDER;
@@ -52,7 +55,8 @@ public class FolderedResourcePackScreen extends PackScreen {
     public final List<Path> roots;
 
     public FolderedResourcePackScreen(Screen parent, ResourcePackManager packManager, Consumer<ResourcePackManager> applier, File mainRoot, Text title, List<Path> roots) {
-        super(parent, packManager, applier, mainRoot, title);
+        super(packManager, applier, mainRoot.toPath(), title);
+        this.parent = parent;
         this.roots = roots;
         this.currentFolderMeta = FolderMeta.loadMetaFile(roots, currentFolder);
         this.currentSorter = (pack1, pack2) -> Integer.compare(
@@ -65,44 +69,32 @@ public class FolderedResourcePackScreen extends PackScreen {
 
     @Override
     protected void init() {
-        client.keyboard.setRepeatEvents(true);
         super.init();
 
         findButton(OPEN_PACK_FOLDER).ifPresent(btn -> {
-            btn.x = width / 2 + 25;
-            btn.y = height - 48;
+            btn.setX(width / 2 + 25);
+            btn.setY(height - 48);
         });
 
         findButton(DONE).ifPresent(btn -> {
-            btn.x = width / 2 + 25;
-            btn.y = height - 26;
+            btn.setX(width / 2 + 25);
+            btn.setY(height - 26);
+            if (btn instanceof ButtonWidget button) {
+                button.onPress = btn2 -> applyAndClose();
+            }
         });
 
-        addDrawableChild(new ButtonWidget(width / 2 - 179, height - 26, 154, 20, folderView ? VIEW_FOLDER : VIEW_FLAT, btn -> {
-            folderView = !folderView;
-            btn.setMessage(folderView ? VIEW_FOLDER : VIEW_FLAT);
+        addDrawableChild(
+                ButtonWidget.builder(folderView ? VIEW_FOLDER : VIEW_FLAT, btn -> {
+                            folderView = !folderView;
+                            btn.setMessage(folderView ? VIEW_FOLDER : VIEW_FLAT);
 
-            refresh();
-            customAvailablePacks.setScrollAmount(0.0);
-        }));
-
-        // Load all available packs button
-        addDrawableChild(new SilentTexturedButtonWidget(width / 2 - 204, 0, 32, 32, 0, 0, ResourcePackFolderEntry.WIDGETS_TEXTURE, btn -> {
-            for (ResourcePackEntry entry : Lists.reverse(List.copyOf(availablePackList.children()))) {
-                if (entry.pack.canBeEnabled()) {
-                    entry.pack.enable();
-                }
-            }
-        }));
-
-        // Unload all button
-        addDrawableChild(new SilentTexturedButtonWidget(width / 2 + 204 - 32, 0, 32, 32, 32, 0, ResourcePackFolderEntry.WIDGETS_TEXTURE, btn -> {
-            for (ResourcePackEntry entry : List.copyOf(selectedPackList.children())) {
-                if (entry.pack.canBeDisabled()) {
-                    entry.pack.disable();
-                }
-            }
-        }));
+                            refresh();
+                            customAvailablePacks.setScrollAmount(0.0);
+                        })
+                        .dimensions(width / 2 - 179, height - 26, 154, 20)
+                        .build()
+        );
 
         searchField = addDrawableChild(new TextFieldWidget(
                 textRenderer, width / 2 - 179, height - 46, 154, 16, searchField, Text.of("")));
@@ -113,8 +105,26 @@ public class FolderedResourcePackScreen extends PackScreen {
         // Replacing the available pack list with our custom implementation
         originalAvailablePacks = availablePackList;
         remove(originalAvailablePacks);
-        addSelectableChild(customAvailablePacks = new FolderedPackListWidget(originalAvailablePacks, 200, height, width / 2 - 204));
+        addSelectableChild(customAvailablePacks = new PackListWidget(client, this, 200, height, availablePackList.title));
+        customAvailablePacks.setLeftPos(width / 2 - 204);
+        // Make the title of the available packs selector clickable to load all packs
+        ((FolderedPackListWidget) customAvailablePacks).recursiveresources$setTitleClickable(AVAILABLE_PACKS_TITLE_HOVER, null, () -> {
+            for (ResourcePackEntry entry : Lists.reverse(List.copyOf(availablePackList.children()))) {
+                if (entry.pack.canBeEnabled()) {
+                    entry.pack.enable();
+                }
+            }
+        });
         availablePackList = customAvailablePacks;
+
+        // Also make the selected packs title clickable to unload them
+        ((FolderedPackListWidget) selectedPackList).recursiveresources$setTitleClickable(SELECTED_PACKS_TITLE_HOVER, null, () -> {
+            for (ResourcePackEntry entry : List.copyOf(selectedPackList.children())) {
+                if (entry.pack.canBeDisabled()) {
+                    entry.pack.disable();
+                }
+            }
+        });
 
         listProcessor.pauseCallback();
         listProcessor.setSorter(currentSorter == null ? (currentSorter = ResourcePackListProcessor.sortAZ) : currentSorter);
@@ -224,9 +234,15 @@ public class FolderedResourcePackScreen extends PackScreen {
         searchField.tick();
     }
 
+    protected void applyAndClose() {
+        organizer.apply();
+        closeDirectoryWatcher();
+    }
+
     @Override
-    public void removed() {
-        super.removed();
-        client.keyboard.setRepeatEvents(false);
+    public void close() {
+        closeDirectoryWatcher();
+        client.setScreen(parent);
+        client.options.addResourcePackProfilesToManager(client.getResourcePackManager());
     }
 }

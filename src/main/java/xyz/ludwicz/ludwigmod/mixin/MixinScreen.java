@@ -1,6 +1,7 @@
 package xyz.ludwicz.ludwigmod.mixin;
 
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -12,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.ModifyConstant;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import xyz.ludwicz.ludwigmod.menublur.MenuBlurMod;
 
-import java.util.Locale;
-
 @Mixin(Screen.class)
 public abstract class MixinScreen {
 
@@ -21,24 +20,24 @@ public abstract class MixinScreen {
     @Nullable
     protected MinecraftClient client;
 
-    @Inject(at = @At("HEAD"), method = "tick")
-    private void blur$reloadShader(CallbackInfo ci) {
-        if (this.getClass().toString().toLowerCase(Locale.ROOT).contains("midnightconfigscreen") && this.client != null) {
-            MenuBlurMod.onScreenChange(this.client.currentScreen);
+    @Inject(at = @At("HEAD"), method = "renderBackground")
+    public void blur$getBackgroundEnabled(DrawContext context, CallbackInfo ci) {
+        if (this.client != null && this.client.world != null) {
+            MenuBlurMod.screenHasBackground = true;
         }
     }
 
     @ModifyConstant(
-            method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;I)V",
+            method = "renderBackground",
             constant = @Constant(intValue = -1072689136))
     private int blur$getFirstBackgroundColor(int color) {
-        return MenuBlurMod.getBackgroundColor();
+        return MenuBlurMod.getBackgroundColor(true);
     }
 
     @ModifyConstant(
-            method = "renderBackground(Lnet/minecraft/client/util/math/MatrixStack;I)V",
+            method = "renderBackground",
             constant = @Constant(intValue = -804253680))
     private int blur$getSecondBackgroundColor(int color) {
-        return MenuBlurMod.getBackgroundColor();
+        return MenuBlurMod.getBackgroundColor(true);
     }
 }

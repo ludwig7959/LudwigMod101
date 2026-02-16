@@ -1,12 +1,7 @@
 package xyz.ludwicz.ludwigmod.resourcepack.gui;
 
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.screen.pack.PackListWidget;
+import net.minecraft.text.Text;
 
-public class FolderedPackListWidget extends PackListWidget {
-    public FolderedPackListWidget(PackListWidget original, int width, int height, int left) {
-        super(MinecraftClient.getInstance(), width, height, original.title);
-        replaceEntries(original.children());
-        setLeftPos(left);
-    }
+public interface FolderedPackListWidget {
+    void recursiveresources$setTitleClickable(Text hoverText, Text tooltip, Runnable clickEvent);
 }

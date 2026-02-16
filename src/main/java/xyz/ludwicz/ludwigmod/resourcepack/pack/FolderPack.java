@@ -8,8 +8,8 @@ import net.minecraft.resource.ResourcePackCompatibility;
 import net.minecraft.resource.ResourcePackSource;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.Nullable;
+import xyz.ludwicz.ludwigmod.LudwigMod;
 
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -29,11 +29,11 @@ public class FolderPack implements ResourcePackOrganizer.Pack {
                 // Ensure the path only contains "a-z0-9_.-" characters
                 relativePath = relativePath.toLowerCase().replaceAll("[^a-zA-Z0-9_.-]", "_");
 
-                Identifier id = new Identifier("recursiveresources", "textures/gui/resourcepack/custom_folders/" + relativePath + "icon.png");
+                Identifier id = new Identifier("recursiveresources", "textures/gui/custom_folders/" + relativePath + "icon.png");
                 MinecraftClient.getInstance().getTextureManager().registerTexture(id, new NativeImageBackedTexture(NativeImage.read(stream)));
                 return id;
             } catch (Exception e) {
-                LogManager.getLogger(FolderPack.class).warn("Error loading custom folder icon:");
+                LudwigMod.getInstance().LOGGER.warn("Error loading custom folder icon:");
                 e.printStackTrace();
             }
         }
@@ -74,6 +74,11 @@ public class FolderPack implements ResourcePackOrganizer.Pack {
     }
 
     @Override
+    public String getName() {
+        return displayName.getString();
+    }
+
+    @Override
     public Text getDisplayName() {
         return displayName;
     }
@@ -85,7 +90,7 @@ public class FolderPack implements ResourcePackOrganizer.Pack {
 
     @Override
     public ResourcePackSource getSource() {
-        return ResourcePackSource.PACK_SOURCE_NONE;
+        return ResourcePackSource.NONE;
     }
 
     @Override

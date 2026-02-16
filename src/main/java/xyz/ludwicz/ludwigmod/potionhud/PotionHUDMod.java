@@ -3,8 +3,9 @@ package xyz.ludwicz.ludwigmod.potionhud;
 import com.google.common.collect.Ordering;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawableHelper;
-import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.render.Tessellator;
+import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.text.Text;
 import net.minecraft.util.StringHelper;
@@ -15,14 +16,20 @@ import java.util.Collection;
 
 public class PotionHUDMod {
 
+    private static DrawContext drawContext = new DrawContext(MinecraftClient.getInstance(), VertexConsumerProvider.immediate(Tessellator.getInstance().getBuffer()));
+
+    static {
+        drawContext.getMatrices().scale(0.8f, 0.8f, 1f);
+    }
+
     public static void renderCompactStatusEffects(Collection<StatusEffectInstance> collection) {
         LudwigConfig config = AutoConfig.getConfigHolder(LudwigConfig.class).getConfig();
-        if(config == null)
+        if (config == null)
             return;
 
         int i = 0;
         int j = 0;
-        for(StatusEffectInstance inst : Ordering.natural().reverse().sortedCopy(collection)) {
+        for (StatusEffectInstance inst : Ordering.natural().reverse().sortedCopy(collection)) {
             if (inst.shouldShowIcon()) {
                 int k = MinecraftClient.getInstance().getWindow().getScaledWidth();
                 int l = 24;
@@ -36,11 +43,8 @@ public class PotionHUDMod {
                     j++;
                 }
 
-                float fontSize = 0.8f;
-                MatrixStack matrixStack = new MatrixStack();
-                matrixStack.scale(fontSize, fontSize, 1f);
-                String duration = inst.isPermanent() ? "∞" : StringHelper.formatTicks(MathHelper.floor((float) inst.getDuration()));
-                DrawableHelper.drawCenteredTextWithShadow(matrixStack, MinecraftClient.getInstance().textRenderer, Text.of(duration).asOrderedText(), (int) ((k - 12) / fontSize), (int) ((l - 5) / fontSize), inst.getDuration() > 200 ? config.potionHudTimerColor : config.potionHudTimerRunningOutColor);
+                String duration = inst.isInfinite() ? "∞" : StringHelper.formatTicks(MathHelper.floor((float) inst.getDuration()));
+                drawContext.drawCenteredTextWithShadow(MinecraftClient.getInstance().textRenderer, Text.of(duration).asOrderedText(), (int) ((k - 12) / 0.8f), (int) ((l - 5) / 0.8f), inst.getDuration() > 200 ? config.potionHudTimerColor : config.potionHudTimerRunningOutColor);
                 // drawRightAlign(matrices, formatDuration(inst), k - 3.25f, l - 0.25f, color, true, fontSize);
             }
         }

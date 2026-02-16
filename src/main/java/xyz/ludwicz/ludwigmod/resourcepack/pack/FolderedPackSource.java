@@ -10,4 +10,9 @@ public record FolderedPackSource(Path root, Path file) implements ResourcePackSo
     public Text decorate(Text packName) {
         return packName;
     }
+
+    @Override
+    public boolean canBeEnabledLater() {
+        return true;
+    }
 }

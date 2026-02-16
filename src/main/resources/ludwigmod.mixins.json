@@ -9,9 +9,11 @@
     "MixinDownloadingTerrainScreen",
     "MixinEntity",
     "MixinEntityRenderDispatcher",
+    "MixinEntryListWidget",
+    "MixinFileResourcePackProvider",
+    "MixinGameRenderer",
     "MixinInGameHud",
     "MixinItemModelGenerator",
-    "MixinItemRenderer",
     "MixinItemStack",
     "MixinLightmapTextureManager",
     "MixinLivingEntityRenderer",
@@ -19,14 +21,18 @@
     "MixinNotifyTask",
     "MixinOptionImpl",
     "MixinOptionsScreen",
+    "MixinPackListWidget",
     "MixinPlayerManager",
     "MixinResourcePackManager",
     "MixinScreen",
     "MixinServerPlayerEntity",
     "MixinSimpleOption",
     "MixinSliderControl",
+    "MixinSprite",
     "MixinTntEntityRenderer",
-    "MixinTooltipComponent"
+    "MixinTooltipComponent",
+    "MixinVideoOptionsScreen",
+    "MixinWindow"
   ],
   "injectors": {
     "defaultRequire": 1
